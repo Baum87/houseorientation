@@ -1,0 +1,40 @@
+import pandas as pd
+
+# loading csv file
+df = pd.read_csv('webscraping_funda.csv')
+
+# plaats in a seperate column
+get_plaats = lambda x: x.split(" ")[-1]
+df["plaats"] = df.postcode.apply(get_plaats)
+
+#remove plaats name out of postcode
+# below selecting 1 row with text for the plaats name by iloc command
+remove_plaats_name = df["plaats"].iloc[0]
+
+remove_plaats = lambda x: x.rstrip(remove_plaats_name)
+df.postcode = df.postcode.map(remove_plaats)
+
+#remove "k.k." in the column prijs
+remove_prijs_kk = lambda x: x.rstrip (" k.k.")
+df.prijs = df.prijs.map(remove_prijs_kk)
+
+#remove € sign in the column prijs
+remove_prijs_euro = lambda x: x.lstrip("€")
+df.prijs = df.prijs.map(remove_prijs_euro)
+
+# from str. to float, column price
+df.prijs = pd.to_numeric(df.prijs, downcast="float")
+
+# waarom de onderstaande niet werkt, geen idee, in de shell zelf doet deze het wel..
+df.drop(columns=["Unnamed: 0"])
+
+#optional; selecting columns
+#prijs_and_place = print(df[["prijs", "adress"]])
+#optional; selecting rows
+#prijs_below_300 = df[df.prijs < 300.0]
+#print(prijs_below_300)
+
+print(df)
+
+#saving the dataframe
+df.to_csv("webscraping_funda_2.csv")
