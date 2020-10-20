@@ -1,0 +1,53 @@
+# import libraries
+import urllib.request
+from bs4 import BeautifulSoup
+from selenium import webdriver
+import time
+import pandas as pd
+
+# specify the url
+urlpage = 'https://www.funda.nl/koop/delden/0-350000/' 
+#print(urlpage)
+
+# run Chrome webdriver from executable path of your choice
+# deze is te zo te laten dmv dat ik in de systeemeigenschappen het path naar de Chrome webdriver heb gecreerd
+driver = webdriver.Chrome()
+
+# get web page, start up the website
+driver.get(urlpage)
+
+# find elements by class
+# het is goed zoeken welke clss of xpaht of tag je moet selecteren voor de juiste informatie
+adress = driver.find_elements_by_xpath("""//*[@class="search-result__header-title-col"]/a[1]""")
+postcode_plaats = driver.find_elements_by_xpath("""//*[@class="search-result__header-title-col"]/a[2]""")
+prijs = driver.find_elements_by_class_name("search-result-price")
+
+#create empty array to store data
+data_adress = []
+data_postcode_plaats = []
+data_prijs = []
+
+# loop door de elementen heen, creeren voan een list with titles
+for (i, j, h) in zip(adress, postcode_plaats, prijs):
+    adress_i = i.text
+    postcode_j = j.text
+    prijs_h = h.text
+    data_adress.append({"adress" : adress_i, "postcode" : postcode_j, "prijs" : prijs_h})
+
+#print(data_adress)
+#print(data_postcode_plaats)
+
+# sleep for 5s
+#time.sleep(2)
+#close driver
+driver.quit()
+
+#save to pandas datafram
+df = pd.DataFrame(data_adress)
+
+# write to csv
+df.to_csv('webscraping_funda.csv')
+
+#print(df)
+
+#resultaat ongestructureerde data in een csv bestand
